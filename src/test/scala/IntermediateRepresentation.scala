@@ -4,7 +4,7 @@ import org.scalatest._
 
 import com.acrussell.commonmark.ir._
 
-import scalaz._;
+import scalaz._
 import Scalaz._
 
 class IntermediateRepresentationSuite extends FunSuite {
@@ -23,6 +23,15 @@ class IntermediateRepresentationSuite extends FunSuite {
               Tree.leaf(Paragraph(false, "Qui *quodsi iracundia")))),
             Tree.node(ListItem(false), Stream(
               Tree.leaf(Paragraph(true, "aliquando id"))))))))))
+
+    implicit def blockShow[Block] = Show.showFromToString[Block]
+
+    val tree = new DocumentTree
+    println("TESTING")
+    println(tree.documentTree.drawTree)
+    tree.addText("hi")
+    println(tree.documentTree.drawTree)
+
 
     assert(Parser(input) == expectedStructure)
   }
