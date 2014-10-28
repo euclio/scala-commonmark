@@ -2,6 +2,9 @@ package com.acrussell.commonmark.ir
 
 import scala.collection.mutable.Map
 
+import scalaz._, Scalaz._
+
+
 object State {
   val linkMap:Map[String,String] = Map()
 }
