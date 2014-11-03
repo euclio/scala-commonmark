@@ -1,18 +1,16 @@
 package com.acrussell.commonmark
 
+import scala.reflect.ClassTag
 
 import com.acrussell.commonmark.ir._
-
-import scalaz._
+import scalaz._, Scalaz._
 
 /**
  * Represents the Markdown document as a tree. The tree may be modified in
  * specific ways depending on the current line being parsed.
  */
 class DocumentTree(baseTree: Tree[Block]) {
-  import Scalaz._
 
-  implicit val BlockEquals: Equal[Block] = Equal.equal(_ == _)
   def == (other: DocumentTree) = this.documentTree === other.documentTree
 
   var documentTree: Tree[Block] = baseTree
@@ -96,6 +94,20 @@ class DocumentTree(baseTree: Tree[Block]) {
     }
   }
 
+  /**
+   * Optionally returns any children of the current node that are both open and
+   * an instance of Block type T.
+   *
+   * @param loc The location to look for children of.
+   * @param T The block type to find
+   */
+  def getChildContainer[T <: Block: ClassTag](loc: TreeLoc[Block]) = {
+    // If we don't keep track of the class tag, then the type information is
+    // erased at runtime.
+    val clazz = implicitly[ClassTag[T]].runtimeClass
+    loc.findChild(tree => tree.rootLabel.open && clazz.isInstance(tree.rootLabel))
+  }
+
   def getLastOpenContainer: TreeLoc[Block] = {
     def getLastOpenContainerHelper(loc: TreeLoc[Block]): TreeLoc[Block] = {
       loc.getLabel match {
@@ -138,8 +150,5 @@ class DocumentTree(baseTree: Tree[Block]) {
     getLastOpenBlockHelper(documentTree.loc).get
   }
 
-  override def toString: String = {
-    implicit val blockToString: Show[Block] = Show.showFromToString[Block]
-    documentTree.drawTree
-  }
+  override def toString: String = documentTree.drawTree
 }

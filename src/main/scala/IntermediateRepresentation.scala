@@ -9,6 +9,11 @@ object State {
   val linkMap:Map[String,String] = Map()
 }
 
+object Block {
+  implicit val BlockEquals: Equal[Block] = Equal.equal(_ == _)
+  implicit val BlockToString: Show[Block] = Show.showFromToString[Block]
+}
+
 sealed abstract class Block {
   def open: Boolean
 }

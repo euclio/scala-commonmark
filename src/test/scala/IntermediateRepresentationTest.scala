@@ -10,7 +10,7 @@ class IntermediateRepresentationSuite extends FunSuite {
     val input = """|> Lorem ipsum dolor
                    |sit amet.
                    |> - Qui *quodsi iracundia*
-                   |> - aliquiando id""".stripMargin
+                   |> - aliquando id""".stripMargin
 
     val expectedStructure: Tree[Block] =
       Tree.node(Document(true), Stream(
@@ -18,10 +18,10 @@ class IntermediateRepresentationSuite extends FunSuite {
           Tree.leaf(Paragraph(false, Some("Lorem ipsum dolor\nsit amet."))),
           Tree.node(BulletList(true, true, '-'), Stream(
             Tree.node(ListItem(false), Stream(
-              Tree.leaf(Paragraph(false, Some("Qui *quodsi iracundia"))))),
-            Tree.node(ListItem(false), Stream(
+              Tree.leaf(Paragraph(false, Some("Qui *quodsi iracundia*"))))),
+            Tree.node(ListItem(true), Stream(
               Tree.leaf(Paragraph(true, Some("aliquando id")))))))))))
 
-    assert(Parser(input) == expectedStructure)
+    assert(new DocumentTree(Parser(input)) == new DocumentTree(expectedStructure))
   }
 }
