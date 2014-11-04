@@ -1,4 +1,4 @@
-package com.acrussell.commonmark
+package com.acrussell.commonmark.syntax
 
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.StringBuilder

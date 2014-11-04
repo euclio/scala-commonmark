@@ -1,12 +1,14 @@
-package com.acrussell.commonmark
+package com.acrussell.commonmark.syntax
+
+import scalaz._, Scalaz._
 
 import com.acrussell.commonmark.ir._
 import com.acrussell.commonmark.ir.documenttree._
 
-import scalaz._, Scalaz._
-
-object Parser {
-
+/**
+ * Provides functions for parsing markdown syntax.
+ */
+package object markdown {
   /**
    * A block quote marker consists of 0-3 spaces of initial indent, plus
    *    (a) the character '>' together with a following space, or
@@ -22,9 +24,7 @@ object Parser {
    */
   val ListItemPattern = """^(-|\+|\*|\d+(?:\.|\))) {0,5}(.*)$""".r
 
-  def apply(input: String) = parse(input)
-
-  def parse(input: String): Tree[Block] =
+  def parseMarkdown(input: String): Tree[Block] =
     input.split("\n")
       .foldLeft(newDocument.loc)((document, line) => parseLine(document, line))
       .toTree
