@@ -1,6 +1,9 @@
 package com.acrussell.commonmark
 
 import com.acrussell.commonmark.ir._
+import com.acrussell.commonmark.ir.documenttree._
+
+import scalaz._, Scalaz._
 
 object Parser {
 
@@ -21,32 +24,28 @@ object Parser {
 
   def apply(input: String) = parse(input)
 
-  def parse(input: String) = {
-    val document = new DocumentTree
-    for (line <- input.split("\n")) {
-      parseLine(document, line)
-    }
-    document.documentTree
-  }
+  def parse(input: String): Tree[Block] =
+    input.split("\n")
+      .foldLeft(newDocument.loc)((document, line) => parseLine(document, line))
+      .toTree
 
-  def parseLine(document: DocumentTree, line: String): Unit = line match {
+  def parseLine(document: TreeLoc[Block], line: String): TreeLoc[Block] = line match {
     case BlockQuotePattern(restOfLine) => {
-      val childContainer = document.getChildContainer[BlockQuote](document.documentTree.loc)
+      val childContainer = getChildContainer[BlockQuote](document)
       childContainer match {
-        case Some(blockQuote) => ()
-        case None => document.addChild(BlockQuote(true))
+        case Some(blockQuote) => parseLine(blockQuote, restOfLine)
+        case None => parseLine(addChild(document, BlockQuote(true)), restOfLine)
       }
-      parseLine(document, restOfLine)
     }
     case ListItemPattern(delimiter, restOfLine) => {
       delimiter match {
-        case "-" | "+" | "*" => document.addBulletListItem(delimiter.head)
+        case "-" | "+" | "*" => parseLine(addBulletListItem(document, delimiter.head), restOfLine)
       }
-      parseLine(document, restOfLine)
     }
-    case text => document.getLastOpenBlock.getLabel match {
-        case p: Paragraph => document.addText(text)
-        case _ => document.addChild(Paragraph(true, Some(text)))
+    case text if !text.isEmpty => getLastOpenBlock(document).getLabel match {
+        case p: Paragraph => addText(document, text).root
+        case _ => addChild(document, Paragraph(true, Some(text))).root
     }
+    case _ => document.root     // Nothing left to parse
   }
 }

@@ -1,11 +1,12 @@
 package com.acrussell.commonmark
 
-import org.scalatest._
+import org.scalatest._, Matchers._
 import scalaz._, Scalaz._
 
 import com.acrussell.commonmark.ir._
+import com.acrussell.commonmark.ir.documenttree._
 
-class IntermediateRepresentationSuite extends FunSuite {
+class IntermediateRepresentationSuite extends FunSuite with DocumentMatchers {
   test("Block structure should be parsed correctly") {
     val input = """|> Lorem ipsum dolor
                    |sit amet.
@@ -22,6 +23,8 @@ class IntermediateRepresentationSuite extends FunSuite {
             Tree.node(ListItem(true), Stream(
               Tree.leaf(Paragraph(true, Some("aliquando id")))))))))))
 
-    assert(new DocumentTree(Parser(input)) == new DocumentTree(expectedStructure))
+    val output = Parser(input)
+
+    Parser(input) should equalDocument (expectedStructure)
   }
 }
