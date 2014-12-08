@@ -52,8 +52,8 @@ case class Paragraph(override val open: Boolean, val text: Option[String]) exten
 
 case class BlankLine(override val open: Boolean) extends Leaf
 
-case class Str(override val open: Boolean, contents: String) extends Block
+case class Str(override val open: Boolean, text: String) extends Leaf
 
-case class Emph(override val open: Boolean) extends Block
+case class Emph(override val open: Boolean) extends Leaf
 
-case class SoftBreak(override val open: Boolean) extends Block
+case class SoftBreak(override val open: Boolean) extends Leaf

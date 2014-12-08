@@ -29,31 +29,31 @@ package object documenttree {
     })
 
   /**
+   * Marks a block as closed.
+   *
+   * @param block The block to close.
+   */
+  def closeBlock(block: Block): Block = {
+    // Unfortunately, Scala isn't smart enough to realize that all subclasses
+    // of Block have a copy method, so we have to match all cases
+    // individually.
+    //
+    // However, there might be smarter way to do this.
+    block match {
+      case d: Document => d.copy(open = false)
+      case p: Paragraph => p.copy(open = false)
+      case b: BlockQuote => b.copy(open = false)
+      case l: ListItem => l.copy(open = false)
+      case l: BulletList => l.copy(open = false)
+    }
+  }
+
+  /**
    * Closes all children of a given tree location.
    *
    * @param loc The node to close the children of.
    */
   def closeChildren(loc: TreeLoc[Block]): TreeLoc[Block] = {
-
-    /**
-     * Marks a block as closed.
-     *
-     * @param block The block to close.
-     */
-    def closeBlock(block: Block): Block = {
-      // Unfortunately, Scala isn't smart enough to realize that all subclasses
-      // of Block have a copy method, so we have to match all cases
-      // individually.
-      //
-      // However, there might be smarter way to do this.
-      block match {
-        case d: Document => d.copy(open = false)
-        case p: Paragraph => p.copy(open = false)
-        case b: BlockQuote => b.copy(open = false)
-        case l: ListItem => l.copy(open = false)
-      }
-    }
-
     val newTree = Tree.node(loc.getLabel, loc.tree.subForest.map(_.map(closeBlock)))
     loc.setTree(newTree)
   }
