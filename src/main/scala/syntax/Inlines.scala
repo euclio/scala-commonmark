@@ -1,5 +1,6 @@
 package com.acrussell.commonmark.syntax
 
+import scala.collection._
 import scala.collection.mutable._
 
 import scalaz._, Scalaz._
@@ -11,13 +12,23 @@ package object inlines {
     var newTree: TreeLoc[Block] = Tree.leaf[Block](Paragraph(false, None)).loc
     var currentStr: StringBuilder = new StringBuilder
 
-    for (char <- paragraph.rootLabel.asInstanceOf[Paragraph].text.get) {
+    val innerText = paragraph.rootLabel.asInstanceOf[Paragraph].text.get
+    val it = innerText.iterator.buffered
+    while (it.hasNext) {
+      val char = it.next
       char match {
         case '\n' => {
           val str = currentStr.mkString
-          newTree = newTree
-            .insertDownLast(Tree.leaf(Str(false, str)))
-            .insertRight(Tree.leaf(SoftBreak(false)))
+          if (it.head == '\n') {
+            // This is a hard break
+            newTree = newTree
+              .insertDownLast(Tree.leaf(Str(false, str))).parent.get
+          } else {
+            // This is a soft break
+            newTree = newTree
+              .insertDownLast(Tree.leaf(Str(false, str)))
+              .insertRight(Tree.leaf(SoftBreak(false)))
+          }
           currentStr.clear()
         }
         case '*' => {
