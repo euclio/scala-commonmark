@@ -24,12 +24,21 @@ package object markdown {
    */
   val ListItemPattern = """^(-|\+|\*|\d+(?:\.|\))) {0,5}(.*)$""".r
 
+  /**
+   * A horizontal rule consists of 0-3 spaces of indentation, followed by a
+   * sequence of three or more matching -, _, or * characters, each followed
+   * optionally by any number of spaces.
+   */
+  val HorizontalRulePattern = """^ {0,3}(-|_|\*)\1\1+ *""".r
+
   def parseMarkdown(input: String): Tree[Block] =
     input.split("\n")
       .foldLeft(newDocument.loc)((document, line) => parseLine(document, line))
       .toTree
 
   def parseLine(document: TreeLoc[Block], line: String): TreeLoc[Block] = line match {
+    case HorizontalRulePattern(_*) =>
+      document.insertDownFirst(Tree.leaf(HorizontalRule(true))).root
     case BlockQuotePattern(restOfLine) => {
       val childContainer = getChildContainer[BlockQuote](document)
       childContainer match {

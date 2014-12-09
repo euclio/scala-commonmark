@@ -45,6 +45,7 @@ package object documenttree {
       case b: BlockQuote => b.copy(open = false)
       case l: ListItem => l.copy(open = false)
       case l: BulletList => l.copy(open = false)
+      case h: HorizontalRule => h.copy(open = false)
     }
   }
 

@@ -7,14 +7,11 @@ import scalatags.Text.all._
 import com.acrussell.commonmark.CommonMark._
 
 class CommonMarkSuite extends FunSuite {
-  test("A single paragraph should be rendered as HTML.") {
-    val input = "aaa"
-    assert("<p>aaa</p>" === CommonMark(input))
+  test("Horizontal rules should be compiled.") {
+    val input = "***\n---\n___"
+    assert(Stream(hr(), hr(), hr()).mkString === compileMarkdown(input).mkString)
   }
 
-}
-
-class HTMLSuite extends FunSuite {
   test("A single paragraph should be compiled.") {
     val input = "aaa"
     assert(Stream(p("aaa")).mkString === compileMarkdown(input).mkString)
@@ -35,5 +32,13 @@ class HTMLSuite extends FunSuite {
             li(p(raw("aliquando id"))))))
 
     assert(outputHTML.mkString === compileMarkdown(input).mkString)
+  }
+
+}
+
+class HTMLSuite extends FunSuite {
+  test("A single paragraph should be rendered as HTML.") {
+    val input = "aaa"
+    assert("<p>aaa</p>" === CommonMark(input))
   }
 }

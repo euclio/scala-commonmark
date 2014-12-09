@@ -36,5 +36,6 @@ package object htmloutput {
   def createTag(block: Block) = block match {
     case str: Str => raw(str.text)
     case sb: SoftBreak => raw(" ")
+    case rule: HorizontalRule => hr()
   }
 }
