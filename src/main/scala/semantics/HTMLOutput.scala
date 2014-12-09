@@ -27,6 +27,10 @@ package object htmloutput {
   def getTag(block: Block) = block match {
     case document: Document => html(_)
     case paragraph: Paragraph => p(_)
+    case blockq: BlockQuote => blockquote(_)
+    case bulletList: BulletList => ul(_)
+    case listItem: ListItem => li(_)
+    case emph: Emph => em(_)
   }
 
   def createTag(block: Block) = block match {

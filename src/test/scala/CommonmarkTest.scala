@@ -19,4 +19,21 @@ class HTMLSuite extends FunSuite {
     val input = "aaa"
     assert(Stream(p("aaa")).mkString === compileMarkdown(input).mkString)
   }
+
+  test("The parsing strategy example should compile correctly.") {
+    val input =
+      """|> Lorem ipsum dolor
+         |sit amet.
+         |> - Qui *quodsi iracundia*
+         |> - aliquando id""".stripMargin
+    val outputHTML =
+      Stream(
+        blockquote(
+          p(raw("Lorem ipsum dolor sit amet.")),
+          ul(
+            li(p(raw("Qui "), em("quodsi iracundia"))),
+            li(p(raw("aliquando id"))))))
+
+    assert(outputHTML.mkString === compileMarkdown(input).mkString)
+  }
 }
